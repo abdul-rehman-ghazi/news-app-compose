@@ -1,4 +1,4 @@
-package com.hotmail.arehmananis.composedemo.android
+package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

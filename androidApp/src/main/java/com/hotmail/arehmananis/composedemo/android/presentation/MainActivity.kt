@@ -1,4 +1,4 @@
-package com.hotmail.arehmananis.composedemo.android
+package com.hotmail.arehmananis.composedemo.android.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

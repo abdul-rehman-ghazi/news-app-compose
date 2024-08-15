@@ -19,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hotmail.arehmananis.composedemo.android.common.toRelativeTimeString
+import com.hotmail.arehmananis.composedemo.android.domain.model.News
 
 @Composable
-fun ItemNews(modifier: Modifier = Modifier) {
+fun ItemNews(modifier: Modifier = Modifier, news: News) {
     Card(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -39,11 +41,11 @@ fun ItemNews(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Title",
+                    text = news.title,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "1hr",
+                    text = news.publishedAt.toRelativeTimeString(),
                     style = MaterialTheme.typography.labelMedium
                 )
             }

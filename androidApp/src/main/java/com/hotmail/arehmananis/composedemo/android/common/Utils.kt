@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -290,14 +291,22 @@ fun String.masked(): String {
             this.takeLast(2)
 }
 
-fun LocalDate.toRelativeDateString(): String {
-    val today = LocalDate.now()
-    val yesterday = today.minusDays(1)
+fun Date.toRelativeTimeString(): String {
+    val now = Date()
+    val diffInMillis = now.time - this.time
+
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis)
+    val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
+    val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
 
     return when {
-        this.isEqual(today) -> "Today"
-        this.isEqual(yesterday) -> "Yesterday"
-        else -> this.toFormattedDateString()
+        seconds < 60 -> "just now"
+        minutes < 60 -> "$minutes min${if (minutes > 1) "s" else ""} ago"
+        hours < 24 -> "$hours hr${if (hours > 1) "s" else ""} ago"
+        days == 1L -> "yesterday"
+        days < 7 -> "$days day${if (days > 1) "s" else ""} ago"
+        else -> SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(this)
     }
 }
 

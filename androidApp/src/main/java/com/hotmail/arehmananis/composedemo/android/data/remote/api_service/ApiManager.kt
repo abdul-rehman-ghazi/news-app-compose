@@ -18,7 +18,6 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -46,13 +45,13 @@ internal object ApiManager {
                     prettyPrint = true
                     isLenient = true
                     ignoreUnknownKeys = true
-                    namingStrategy = JsonNamingStrategy.SnakeCase
+                    // namingStrategy = JsonNamingStrategy.SnakeCase
                 })
             }
 
 //        install(CurlLoggingPlugin)
             install(createCustomHeaderPlugin(context))
-//        install(createAuthPlugin(authDataSource, apiConfig))
+            install(createAuthPlugin(apiConfig))
 
             defaultRequest {
                 accept(ContentType.Application.Json)
@@ -76,3 +75,13 @@ fun createCustomHeaderPlugin(context: Context) = createClientPlugin("CustomHeade
     }
 }
 
+internal fun createAuthPlugin(
+    apiConfig: ApiConfig,
+) = createClientPlugin("AuthPlugin") {
+
+    onRequest { request, _ ->
+        request.url {
+            parameters.append("apiKey", apiConfig.apiKey)
+        }
+    }
+}

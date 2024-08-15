@@ -8,10 +8,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class GetNewsUseCase(private val newsRepository: NewsRepository) {
-    operator fun invoke(page: Int): Flow<Resource<List<News>>> = flow {
+    operator fun invoke(page: Int, keyword: String?): Flow<Resource<List<News>>> = flow {
         try {
             emit(Resource.Loading())
-            val result = newsRepository.getTopHeadline(page)
+            val result = if (keyword != null) {
+                newsRepository.getEverything(page, keyword)
+            } else {
+                newsRepository.getTopHeadline(page)
+            }
             if (result.status == "ok") {
                 val newsList = result.articles!!.map { it.toNews() }
                 emit(Resource.Success(newsList))

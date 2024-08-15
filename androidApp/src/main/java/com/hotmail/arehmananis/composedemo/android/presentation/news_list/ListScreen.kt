@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,6 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +42,10 @@ import org.koin.androidx.compose.koinViewModel
 fun ListScreen(
     viewModel: ListViewModel = koinViewModel()
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     var keyword by remember { mutableStateOf("") }
 
     Scaffold(
@@ -46,7 +57,8 @@ fun ListScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
+                    .padding(top = 16.dp)
+                    .focusRequester(focusRequester),
                 leadingIcon = {
                     Icon(
                         Icons.Sharp.Search,
@@ -54,11 +66,17 @@ fun ListScreen(
                     )
                 },
                 shape = RoundedCornerShape(12.dp),
-//                colors = OutlinedTextFieldDefaults.colors(
-//                    focusedContainerColor = Color.White,
-//                    unfocusedContainerColor = Color.White,
-//                    disabledContainerColor = Color.White
-//                )
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        viewModel.getNews(1, keyword)
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                ),
+                singleLine = true,
             )
         }
     ) { innerPadding ->
@@ -83,13 +101,13 @@ fun ListScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(16.dp),
                     ) {
-                        items(viewModel.newsState.value.data!!) { news ->
+                        items(viewModel.newsState.value.data ?: emptyList()) { news ->
                             ItemNews(news = news)
                         }
                     }
                 } else if (viewModel.newsState.value.error != null) {
                     Text(
-                        text = viewModel.newsState.value.error!!,
+                        text = viewModel.newsState.value.error ?: "",
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center
                     )

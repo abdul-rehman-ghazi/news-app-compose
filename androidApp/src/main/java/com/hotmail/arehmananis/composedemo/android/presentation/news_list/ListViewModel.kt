@@ -22,15 +22,16 @@ class ListViewModel(
     private val news = mutableListOf<News>()
 
     init {
-        getNews(currentPage)
+        getNews(currentPage, null)
     }
 
-    private fun getNews(page: Int) {
+    fun getNews(page: Int, keyword: String?) {
         viewModelScope.launch {
-            getNewsUseCase(page).collect { resource ->
+            getNewsUseCase(page, keyword).collect { resource ->
                 val uiState = when (resource) {
                     is Resource.Loading -> UiState(isLoading = true)
                     is Resource.Success -> {
+                        if (page == 1) news.clear()
                         news.addAll(resource.data!!)
                         UiState(data = news.toList())
                     }
@@ -49,7 +50,7 @@ class ListViewModel(
             (newsState.value.data?.size?.mod(ApiConstants.REQUEST_PER_PAGE_LENGTH) ?: 0) == 0
         ) {
             currentPage++
-            getNews(currentPage)
+            // getNews(currentPage)
         }
     }
 }

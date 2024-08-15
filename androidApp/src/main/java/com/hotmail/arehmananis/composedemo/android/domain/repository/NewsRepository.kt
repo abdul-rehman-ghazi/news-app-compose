@@ -4,4 +4,6 @@ import com.hotmail.arehmananis.composedemo.android.data.remote.dto.response.GetN
 
 interface NewsRepository {
     suspend fun getTopHeadline(page: Int): GetNewsResponse
+
+    suspend fun getEverything(page: Int, keyword: String): GetNewsResponse
 }

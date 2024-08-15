@@ -16,7 +16,7 @@ data class GetNewsResponse(
 
 @Serializable
 data class Article(
-    var author: String,
+    var author: String?,
     var content: String?,
     var description: String?,
     var publishedAt: String?,
@@ -28,7 +28,7 @@ data class Article(
 
 @Serializable
 data class Source(
-    var id: String,
+    var id: String?,
     var name: String
 )
 

@@ -61,5 +61,6 @@ fun MyApplicationTheme(
         content = content,
         colorScheme = colors,
         typography = typography,
+        shapes = shapes,
     )
 }

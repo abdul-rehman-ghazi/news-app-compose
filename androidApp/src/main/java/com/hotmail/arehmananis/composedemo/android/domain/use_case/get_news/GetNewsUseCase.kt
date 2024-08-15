@@ -11,6 +11,7 @@ class GetNewsUseCase(private val newsRepository: NewsRepository) {
 
     operator fun invoke(page: Int): Flow<Resource<List<News>>> = flow {
         try {
+            emit(Resource.Loading())
             val result = newsRepository.getTopHeadline(page).articles.map { it.toNews() }
             emit(Resource.Success(result))
         } catch (cause: Throwable) {

@@ -11,7 +11,7 @@ class ApiServiceKtorImpl(
     private val httpClient: HttpClient
 ) : ApiServiceKtor {
     override suspend fun topHeadlines(page: Int): GetNewsResponse {
-        return httpClient.get(routesHelper.getUrl("top-headlines?country=us")) {
+        return httpClient.get(routesHelper.getUrl("everything?country=us")) {
             url {
                 parameters.append("page", page.toString())
             }

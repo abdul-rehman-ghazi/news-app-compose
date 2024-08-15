@@ -7,10 +7,12 @@ import java.util.Date
 
 @Serializable
 data class GetNewsResponse(
-    var articles: List<Article>,
     var status: String,
-    var totalResults: Int
-)
+    var code: String?,
+    var articles: List<Article>?,
+    var totalResults: Int?,
+    var message: String?
+) // : BaseResponse(status)
 
 @Serializable
 data class Article(

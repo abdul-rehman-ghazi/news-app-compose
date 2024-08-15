@@ -55,5 +55,8 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
+
     debugImplementation(libs.compose.ui.tooling)
 }

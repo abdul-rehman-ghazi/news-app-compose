@@ -45,6 +45,7 @@ internal object ApiManager {
                     prettyPrint = true
                     isLenient = true
                     ignoreUnknownKeys = true
+                    explicitNulls = false
                     // namingStrategy = JsonNamingStrategy.SnakeCase
                 })
             }

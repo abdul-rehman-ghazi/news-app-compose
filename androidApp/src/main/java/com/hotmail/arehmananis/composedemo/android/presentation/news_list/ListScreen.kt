@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -61,27 +62,37 @@ fun ListScreen(
             )
         }
     ) { innerPadding ->
-        if (viewModel.newsState.value.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (viewModel.newsState.value.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),
                     color = MaterialTheme.colorScheme.secondary,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     strokeWidth = 8.dp
                 )
-            }
-        } else {
-            if (viewModel.newsState.value.data != null) {
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(16.dp),
-                ) {
-                    items(viewModel.newsState.value.data!!) { news ->
-                        ItemNews(news = news)
+            } else {
+                if (viewModel.newsState.value.data != null) {
+                    LazyColumn(
+                        Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(16.dp),
+                    ) {
+                        items(viewModel.newsState.value.data!!) { news ->
+                            ItemNews(news = news)
+                        }
                     }
+                } else if (viewModel.newsState.value.error != null) {
+                    Text(
+                        text = viewModel.newsState.value.error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }

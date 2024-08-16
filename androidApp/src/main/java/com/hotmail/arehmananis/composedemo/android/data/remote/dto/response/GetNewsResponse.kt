@@ -1,9 +1,9 @@
 package com.hotmail.arehmananis.composedemo.android.data.remote.dto.response
 
-import com.hotmail.arehmananis.composedemo.android.common.toDate
 import com.hotmail.arehmananis.composedemo.android.domain.model.News
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
-import java.util.Date
 
 @Serializable
 data class GetNewsResponse(
@@ -36,7 +36,7 @@ fun Article.toNews(): News = News(
     author = author,
     content = content,
     description = description,
-    publishedAt = publishedAt?.toDate("yyyy-MM-dd'T'HH:mm:ssX") ?: Date(),
+    publishedAt = if (publishedAt != null) Instant.parse(publishedAt!!) else Clock.System.now(),
     source = source.name,
     title = title,
     url = url,

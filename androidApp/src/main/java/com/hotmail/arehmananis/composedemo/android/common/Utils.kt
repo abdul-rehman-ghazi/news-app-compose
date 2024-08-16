@@ -26,6 +26,11 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.io.File
 import java.io.FileOutputStream
 import java.math.BigDecimal
@@ -291,9 +296,9 @@ fun String.masked(): String {
             this.takeLast(2)
 }
 
-fun Date.toRelativeTimeString(): String {
-    val now = Date()
-    val diffInMillis = now.time - this.time
+fun Instant.toRelativeTimeString(): String {
+    val now = Clock.System.now()
+    val diffInMillis = now.toEpochMilliseconds() - this.toEpochMilliseconds()
 
     val seconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis)
     val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis)
@@ -306,7 +311,8 @@ fun Date.toRelativeTimeString(): String {
         hours < 24 -> "$hours hr${if (hours > 1) "s" else ""} ago"
         days == 1L -> "yesterday"
         days < 7 -> "$days day${if (days > 1) "s" else ""} ago"
-        else -> SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(this)
+        else -> this.toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime()
+            .format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
     }
 }
 

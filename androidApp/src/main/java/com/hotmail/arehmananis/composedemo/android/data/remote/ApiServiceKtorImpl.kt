@@ -29,6 +29,7 @@ class ApiServiceKtorImpl(
                     append("q", keyword)
                     append("page", page.toString())
                     append("pageSize", ApiConstants.REQUEST_PER_PAGE_LENGTH.toString())
+                    append("language", "en")
 //                    append(
 //                        "from",
 //                        LocalDateTime.now().minusYears(1)

@@ -1,5 +1,6 @@
 package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,8 +24,10 @@ import com.hotmail.arehmananis.composedemo.android.common.toRelativeTimeString
 import com.hotmail.arehmananis.composedemo.android.domain.model.News
 
 @Composable
-fun ItemNews(modifier: Modifier = Modifier, news: News) {
-    Card(modifier = modifier.fillMaxWidth()) {
+fun ItemNews(modifier: Modifier = Modifier, news: News, onItemClick: () -> Unit) {
+    Card(modifier = modifier
+        .fillMaxWidth()
+        .clickable { onItemClick() }) {
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -71,6 +74,7 @@ fun ItemNewsPreview(modifier: Modifier = Modifier) {
             title = "Why Arshad Nadeem’s Olympic Gold Medal for Pakistan Is So Significant",
             url = "https://time.com/7009425/arshad-nadeem-olympics-gold-medal-pakistan-significance/",
             urlToImage = "https://api.time.com/wp-content/uploads/2024/08/arshad-nadeem-pakistan.jpg?quality=85&w=1024&h=628&crop=1",
-        )
+        ),
+        onItemClick = { }
     )
 }

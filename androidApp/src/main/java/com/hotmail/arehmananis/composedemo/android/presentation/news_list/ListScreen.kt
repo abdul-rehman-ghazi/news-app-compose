@@ -35,11 +35,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hotmail.arehmananis.composedemo.android.domain.model.News
 import org.koin.androidx.compose.koinViewModel
 
 @Preview
 @Composable
 fun ListScreen(
+    navigateToDetailsScreen: (News) -> Unit = { },
     viewModel: ListViewModel = koinViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -71,7 +73,7 @@ fun ListScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        viewModel.getNews(1, keyword)
+                        viewModel.getNews(1, keyword.ifBlank { null })
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
@@ -102,7 +104,7 @@ fun ListScreen(
                         contentPadding = PaddingValues(16.dp),
                     ) {
                         items(viewModel.newsState.value.data ?: emptyList()) { news ->
-                            ItemNews(news = news)
+                            ItemNews(news = news, onItemClick = { navigateToDetailsScreen(news) })
                         }
                     }
                 } else if (viewModel.newsState.value.error != null) {

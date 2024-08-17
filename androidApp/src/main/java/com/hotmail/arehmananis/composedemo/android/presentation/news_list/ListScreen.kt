@@ -35,10 +35,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hotmail.arehmananis.composedemo.android.di.injectDependencies
 import com.hotmail.arehmananis.composedemo.android.domain.model.News
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.KoinApplication
 
-@Preview
 @Composable
 fun ListScreen(
     navigateToDetailsScreen: (News) -> Unit = { },
@@ -104,7 +106,9 @@ fun ListScreen(
                         contentPadding = PaddingValues(16.dp),
                     ) {
                         items(viewModel.newsState.value.data ?: emptyList()) { news ->
-                            ItemNews(news = news, onItemClick = { navigateToDetailsScreen(news) })
+                            ItemNews(news = news, onItemClick = {
+                                navigateToDetailsScreen(news)
+                            })
                         }
                     }
                 } else if (viewModel.newsState.value.error != null) {
@@ -116,5 +120,15 @@ fun ListScreen(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun MyScreenPreview() {
+    KoinApplication(application = {
+        modules(injectDependencies()) //Function that groups all DI modules
+    }) {
+        ListScreen()
     }
 }

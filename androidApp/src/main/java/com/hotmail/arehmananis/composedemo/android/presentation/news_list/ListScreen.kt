@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,8 +85,9 @@ fun ListScreen(
                         Icons.Sharp.Clear,
                         contentDescription = "Clear Search",
                         modifier = Modifier.clickable {
+                            viewModel.resetPageCount()
                             keyword = ""
-                            viewModel.getNews(1, keyword.ifBlank { null })
+                            viewModel.getNews(keyword)
                             keyboardController?.hide()
                             focusManager.clearFocus()
                         }
@@ -97,7 +99,8 @@ fun ListScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        viewModel.getNews(1, keyword.ifBlank { null })
+                        viewModel.resetPageCount()
+                        viewModel.getNews(keyword)
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
@@ -112,7 +115,7 @@ fun ListScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center,
         ) {
-            if (viewModel.newsState.value.isLoading) {
+            if (viewModel.newsState.value.isLoading && viewModel.currentPage.value == 1) {
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),
                     color = MaterialTheme.colorScheme.secondary,
@@ -120,14 +123,15 @@ fun ListScreen(
                     strokeWidth = 8.dp
                 )
             } else {
-                if (viewModel.newsState.value.data != null) {
+                if (viewModel.news.isNotEmpty()) {
                     LazyColumn(
                         Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        items(viewModel.newsState.value.data ?: emptyList()) { news ->
+                        items(viewModel.news) { news ->
                             ItemNews(news = news, onItemClick = {
                                 if (news.content.isNullOrBlank()) {
                                     launchChromeTab(context, news.url)
@@ -135,6 +139,20 @@ fun ListScreen(
                                     navigateToDetailsScreen(news)
                                 }
                             })
+                        }
+
+                        if (viewModel.newsState.value.isLoading && viewModel.currentPage.value > 1) {
+                            item {
+                                Box(modifier = Modifier.padding(16.dp)) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
+
+                        item {
+                            LaunchedEffect(true) {
+                                viewModel.loadMore(keyword)
+                            }
                         }
                     }
                 } else if (viewModel.newsState.value.error != null) {

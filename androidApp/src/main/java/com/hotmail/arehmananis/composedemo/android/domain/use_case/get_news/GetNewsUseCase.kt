@@ -11,7 +11,7 @@ class GetNewsUseCase(private val newsRepository: NewsRepository) {
     operator fun invoke(page: Int, keyword: String?): Flow<Resource<List<News>>> = flow {
         try {
             emit(Resource.Loading())
-            val result = if (keyword != null) {
+            val result = if (!keyword.isNullOrBlank()) {
                 newsRepository.getEverything(page, keyword)
             } else {
                 newsRepository.getTopHeadline(page)

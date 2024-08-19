@@ -1,6 +1,7 @@
 package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,20 +19,26 @@ class ListViewModel(
     private val _newsState = mutableStateOf(UiState<List<News>>())
     val newsState: State<UiState<List<News>>> = _newsState
 
-    private var currentPage = 1
-    private val news = mutableListOf<News>()
+    private val _currentPage = mutableIntStateOf(1)
+    val currentPage: State<Int> = _currentPage
+
+    val news = mutableListOf<News>()
 
     init {
-        getNews(currentPage, null)
+        getNews(null)
     }
 
-    fun getNews(page: Int, keyword: String?) {
+    fun resetPageCount() {
+        _currentPage.intValue = 1
+    }
+
+    fun getNews(keyword: String? = null) {
         viewModelScope.launch {
-            getNewsUseCase(page, keyword).collect { resource ->
+            getNewsUseCase(_currentPage.intValue, keyword).collect { resource ->
                 val uiState = when (resource) {
                     is Resource.Loading -> UiState(isLoading = true)
                     is Resource.Success -> {
-                        if (page == 1) news.clear()
+                        if (_currentPage.intValue == 1) news.clear()
                         news.addAll(resource.data!!)
                         UiState(data = news.toList())
                     }
@@ -45,12 +52,12 @@ class ListViewModel(
         }
     }
 
-    fun loadMore() {
+    fun loadMore(keyword: String? = null) {
         if (!newsState.value.isLoading &&
             (newsState.value.data?.size?.mod(ApiConstants.REQUEST_PER_PAGE_LENGTH) ?: 0) == 0
         ) {
-            currentPage++
-            // getNews(currentPage)
+            _currentPage.intValue++
+            getNews(keyword)
         }
     }
 }

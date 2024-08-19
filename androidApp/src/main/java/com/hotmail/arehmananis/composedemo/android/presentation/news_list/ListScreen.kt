@@ -1,8 +1,6 @@
 package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
-import android.content.Context
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Clear
 import androidx.compose.material.icons.sharp.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -78,6 +77,18 @@ fun ListScreen(
                     Icon(
                         Icons.Sharp.Search,
                         contentDescription = "Search Icon"
+                    )
+                },
+                trailingIcon = {
+                    if (keyword.isNotBlank()) Icon(
+                        Icons.Sharp.Clear,
+                        contentDescription = "Clear Search",
+                        modifier = Modifier.clickable {
+                            keyword = ""
+                            viewModel.getNews(1, keyword.ifBlank { null })
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }
                     )
                 },
                 shape = RoundedCornerShape(12.dp),

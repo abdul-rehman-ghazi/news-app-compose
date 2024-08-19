@@ -46,8 +46,9 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.browser)
 
-    // Ktor
+    // API Client - Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)
@@ -55,9 +56,12 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.logback.classic)
 
+    // DI - Koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
+    // Custom Views
+    // Image from URL - Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
 

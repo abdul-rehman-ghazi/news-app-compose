@@ -1,5 +1,8 @@
 package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
+import android.content.Context
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,33 +27,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hotmail.arehmananis.composedemo.android.di.injectDependencies
+import com.hotmail.arehmananis.composedemo.android.data.remote.ApiServiceKtorImpl
+import com.hotmail.arehmananis.composedemo.android.data.remote.api_service.ApiConfig
+import com.hotmail.arehmananis.composedemo.android.data.remote.api_service.RoutesHelper
+import com.hotmail.arehmananis.composedemo.android.data.repository.NewsRepositoryImpl
 import com.hotmail.arehmananis.composedemo.android.domain.model.News
-import org.koin.android.ext.koin.androidContext
+import com.hotmail.arehmananis.composedemo.android.domain.use_case.get_news.GetNewsUseCase
+import com.hotmail.arehmananis.composedemo.android.presentation.launchChromeTab
+import io.ktor.client.HttpClient
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.KoinApplication
 
 @Composable
 fun ListScreen(
     navigateToDetailsScreen: (News) -> Unit = { },
     viewModel: ListViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    var keyword by remember { mutableStateOf("") }
+    var keyword by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -107,7 +118,11 @@ fun ListScreen(
                     ) {
                         items(viewModel.newsState.value.data ?: emptyList()) { news ->
                             ItemNews(news = news, onItemClick = {
-                                navigateToDetailsScreen(news)
+                                if (news.content.isNullOrBlank()) {
+                                    launchChromeTab(context, news.url)
+                                } else {
+                                    navigateToDetailsScreen(news)
+                                }
                             })
                         }
                     }
@@ -121,14 +136,18 @@ fun ListScreen(
             }
         }
     }
+
+
 }
 
 @Preview
 @Composable
 fun MyScreenPreview() {
-    KoinApplication(application = {
-        modules(injectDependencies()) //Function that groups all DI modules
-    }) {
-        ListScreen()
-    }
+    ListScreen(
+        viewModel = ListViewModel(
+            GetNewsUseCase(
+                NewsRepositoryImpl(ApiServiceKtorImpl(RoutesHelper(ApiConfig.DEV), HttpClient()))
+            )
+        )
+    )
 }

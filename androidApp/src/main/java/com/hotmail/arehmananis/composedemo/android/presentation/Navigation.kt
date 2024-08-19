@@ -1,5 +1,8 @@
 package com.hotmail.arehmananis.composedemo.android.presentation
 
+import android.content.Context
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,4 +41,10 @@ fun DefineNavigation() {
             )
         }
     }
+}
+
+fun launchChromeTab(context: Context, url: String) {
+    val builder = CustomTabsIntent.Builder()
+    val customTabsIntent = builder.build()
+    customTabsIntent.launchUrl(context, Uri.parse(url))
 }

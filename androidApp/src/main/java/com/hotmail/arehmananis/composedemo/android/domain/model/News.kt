@@ -14,6 +14,20 @@ data class News(
     var url: String,
     var urlToImage: String?,
 ) {
+    val ellipsizeContent: String
+        get() {
+            return content?.let {
+                val startIndex = it.indexOf("[+")
+                val endIndex = it.indexOf(" chars]")
+
+                return if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                    it.removeRange(startIndex, endIndex + " chars]".length)
+                } else {
+                    it
+                }
+            } ?: kotlin.run { "N/A" }
+        }
+
     companion object {
         fun dummy() = News(
             author = "Armani Syed",

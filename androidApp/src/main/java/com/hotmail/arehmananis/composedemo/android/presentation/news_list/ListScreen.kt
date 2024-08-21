@@ -1,15 +1,11 @@
 package com.hotmail.arehmananis.composedemo.android.presentation.news_list
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,7 +19,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +42,7 @@ import com.hotmail.arehmananis.composedemo.android.data.repository.NewsRepositor
 import com.hotmail.arehmananis.composedemo.android.domain.model.News
 import com.hotmail.arehmananis.composedemo.android.domain.use_case.get_news.GetNewsUseCase
 import com.hotmail.arehmananis.composedemo.android.presentation.launchChromeTab
+import com.hotmail.arehmananis.composedemo.android.presentation.ui.custom_views.PullToRefreshLazyColumn
 import io.ktor.client.HttpClient
 import org.koin.androidx.compose.koinViewModel
 
@@ -115,7 +111,7 @@ fun ListScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center,
         ) {
-            if (viewModel.newsState.value.isLoading && viewModel.currentPage.value == 1) {
+            if (!viewModel.isRefreshing.value && viewModel.newsState.value.isLoading && viewModel.currentPage.value == 1) {
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),
                     color = MaterialTheme.colorScheme.secondary,
@@ -124,14 +120,9 @@ fun ListScreen(
                 )
             } else {
                 if (viewModel.news.isNotEmpty()) {
-                    LazyColumn(
-                        Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        items(viewModel.news) { news ->
+                    PullToRefreshLazyColumn<News>(
+                        items = viewModel.news,
+                        content = { news ->
                             ItemNews(news = news, onItemClick = {
                                 if (news.content.isNullOrBlank()) {
                                     launchChromeTab(context, news.url)
@@ -139,22 +130,18 @@ fun ListScreen(
                                     navigateToDetailsScreen(news)
                                 }
                             })
-                        }
-
-                        if (viewModel.newsState.value.isLoading && viewModel.currentPage.value > 1) {
-                            item {
-                                Box(modifier = Modifier.padding(16.dp)) {
-                                    CircularProgressIndicator()
-                                }
+                        },
+                        isRefreshing = viewModel.isRefreshing.value,
+                        onRefresh = {
+                            viewModel.isRefreshing.value = true
+                            viewModel.resetPageCount()
+                            viewModel.getNews(keyword) {
+                                viewModel.isRefreshing.value = false
                             }
-                        }
-
-                        item {
-                            LaunchedEffect(true) {
-                                viewModel.loadMore(keyword)
-                            }
-                        }
-                    }
+                        },
+                        isLoadingMore = viewModel.newsState.value.isLoading && viewModel.currentPage.value > 1,
+                        onLoadMore = { viewModel.loadMore(keyword) },
+                    )
                 } else if (viewModel.newsState.value.error != null) {
                     Text(
                         text = viewModel.newsState.value.error ?: "",

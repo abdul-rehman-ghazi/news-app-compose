@@ -22,6 +22,8 @@ class ListViewModel(
     private val _currentPage = mutableIntStateOf(1)
     val currentPage: State<Int> = _currentPage
 
+    val isRefreshing = mutableStateOf(false)
+
     val news = mutableListOf<News>()
 
     init {
@@ -32,7 +34,7 @@ class ListViewModel(
         _currentPage.intValue = 1
     }
 
-    fun getNews(keyword: String? = null) {
+    fun getNews(keyword: String? = null, onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
             getNewsUseCase(_currentPage.intValue, keyword).collect { resource ->
                 val uiState = when (resource) {
@@ -40,6 +42,7 @@ class ListViewModel(
                     is Resource.Success -> {
                         if (_currentPage.intValue == 1) news.clear()
                         news.addAll(resource.data!!)
+                        onComplete?.invoke()
                         UiState(data = news.toList())
                     }
 

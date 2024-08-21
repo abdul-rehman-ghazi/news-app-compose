@@ -10,6 +10,7 @@ The News App is a Kotlin-based project designed to demonstrate modern Android de
 - **API Integration:** Fetches live news data using RESTful APIs.
 - **Dependency Injection:** Manages dependencies efficiently with Koin, promoting testability and modularity.
 - **Date and Time Handling:** Cross-platform safe date and time calculations using kotlinx-datetime.
+- **Image Loading:** Efficiently loads and displays images from URLs using Coil.
 
 ## Libraries Used
 
@@ -18,6 +19,7 @@ The following libraries and tools are integral to the project:
 1. **[Ktor](https://github.com/ktorio/ktor):** A robust framework for making asynchronous network API calls, ensuring efficient data retrieval and handling.
 2. **[Koin](https://github.com/InsertKoinIO/koin):** A lightweight dependency injection framework, simplifying the management of dependencies across the application.
 3. **[kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime):** Provides multiplatform support for date and time operations, ensuring consistent behavior across different platforms.
+4. **[Coil](https://github.com/coil-kt/coil):** An image loading library for Android backed by Kotlin Coroutines, optimized for performance and ease of use, allowing seamless loading of images from URLs.
 
 ## Architecture
 

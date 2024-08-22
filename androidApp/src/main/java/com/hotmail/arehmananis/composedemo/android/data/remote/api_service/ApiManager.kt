@@ -2,6 +2,7 @@ package com.hotmail.arehmananis.composedemo.android.data.remote.api_service
 
 import android.content.Context
 import android.os.Build
+import com.hotmail.arehmananis.composedemo.android.BuildConfig
 import com.hotmail.arehmananis.composedemo.android.common.deviceId
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -82,7 +83,7 @@ internal fun createAuthPlugin(
 
     onRequest { request, _ ->
         request.url {
-            parameters.append("apiKey", apiConfig.apiKey)
+            parameters.append("apiKey", BuildConfig.API_KEY)
         }
     }
 }
